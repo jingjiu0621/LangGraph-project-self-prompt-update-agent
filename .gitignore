@@ -32,3 +32,6 @@ conda-windows-64.lock
 # ── LangGraph / temp ──────────────────────────────────────
 .graphistry/
 *.local.sqlite
+
+# ── LangGraph / plan ───────────────────────────────────────
+.claude/
