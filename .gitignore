@@ -1,0 +1,34 @@
+# ── Environment ────────────────────────────────────────────
+.env
+.venv/
+env/
+venv/
+
+# ── Python ─────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# ── IDE ────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ─────────────────────────────────────────────────────
+Thumbs.db
+.DS_Store
+
+# ── Conda ──────────────────────────────────────────────────
+# environment.yml is tracked in git — only ignore local
+# overrides or lock files
+conda-linux-64.lock
+conda-windows-64.lock
+
+# ── LangGraph / temp ──────────────────────────────────────
+.graphistry/
+*.local.sqlite
