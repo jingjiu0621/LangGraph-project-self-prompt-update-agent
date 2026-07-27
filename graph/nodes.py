@@ -1,7 +1,7 @@
-"""Graph node functions — full self-prompt-update pipeline.
+"""图节点函数 — 完整的自提示更新流水线。
 
-Each node receives (GraphState, llm) and returns a partial dict of fields
-to update.  Phases map directly to plan.md sections.
+每个节点接收 (GraphState, llm) 并返回要更新的字段部分字典。
+阶段直接映射到 plan.md 中的章节。
 """
 
 from __future__ import annotations
@@ -16,11 +16,11 @@ from graph.state import GraphState
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 1 — Event Recording  (plan.md §7.1)
+# 阶段 1 — 事件记录（plan.md §7.1）
 # ═══════════════════════════════════════════════════════════════════
 
 def event_recorder(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Record the user input as an interaction_event with trace_id."""
+    """将用户输入记录为带有 trace_id 的 interaction_event。"""
     user_input = state.get("user_input", "")
     trace_id = state.get("trace_id", uuid.uuid4().hex[:16])
 
@@ -40,11 +40,11 @@ def event_recorder(state: GraphState, llm: BaseLanguageModel | None = None) -> d
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 2 — Context Retrieval (RAG)  (plan.md §9)
+# 阶段 2 — 上下文检索（RAG）（plan.md §9）
 # ═══════════════════════════════════════════════════════════════════
 
 def context_retriever(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Retrieve relevant context: user profile, project facts, past tasks, memories."""
+    """检索相关上下文：用户画像、项目事实、历史任务、记忆。"""
     user_input = state.get("user_input", "")
 
     if llm:
@@ -73,11 +73,11 @@ def context_retriever(state: GraphState, llm: BaseLanguageModel | None = None) -
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 3 — Prompt Compilation  (plan.md §10)
+# 阶段 3 — Prompt 编译（plan.md §10）
 # ═══════════════════════════════════════════════════════════════════
 
 def prompt_compiler(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Compile a structured, personalized prompt package from retrieved context."""
+    """从检索到的上下文编译结构化的个性化提示包。"""
     user_input = state.get("user_input", "")
     context = state.get("retrieved_context", {})
     user_profile = context.get("user_profile", {})
@@ -110,16 +110,16 @@ def prompt_compiler(state: GraphState, llm: BaseLanguageModel | None = None) -> 
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 4 — Agent Execution  (plan.md Agent Orchestrator)
+# 阶段 4 — Agent 执行（plan.md Agent Orchestrator）
 # ═══════════════════════════════════════════════════════════════════
 
 def agent_executor(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Execute the task: reasoning → tool calls → produce result."""
+    """执行任务：推理 → 工具调用 → 产出结果。"""
     user_input = state.get("user_input", "")
     prompt = state.get("compiled_prompt", {})
     revision = state.get("revision_count", 0)
     feedback_type = state.get("feedback_type", "")
-    # Only increment revision_count on re-execution (triggered by correction)
+    # 仅在重新执行时增加 revision_count（由 correction 触发）
     if feedback_type == "correction":
         revision += 1
 
@@ -160,11 +160,11 @@ def agent_executor(state: GraphState, llm: BaseLanguageModel | None = None) -> d
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 5 — Output Formatting
+# 阶段 5 — 输出格式化
 # ═══════════════════════════════════════════════════════════════════
 
 def output_formatter(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Format the execution result into the final user-facing output."""
+    """将执行结果格式化为最终的面向用户输出。"""
     result = state.get("execution_result", "")
     trace_id = state.get("trace_id", "")
 
@@ -192,11 +192,11 @@ def output_formatter(state: GraphState, llm: BaseLanguageModel | None = None) ->
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 6 — Feedback Collection  (plan.md §7.1 / feedback_items)
+# 阶段 6 — 反馈收集（plan.md §7.1 / feedback_items）
 # ═══════════════════════════════════════════════════════════════════
 
 def feedback_collector(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Collect and interpret user feedback on the output."""
+    """收集并解读用户对输出的反馈。"""
     result = state.get("execution_result", "")
     revision = state.get("revision_count", 0)
 
@@ -216,7 +216,7 @@ def feedback_collector(state: GraphState, llm: BaseLanguageModel | None = None) 
         else:
             feedback_type = "accept"
     else:
-        # Fallback: first pass always needs revision, second pass accepts
+        # 回退：第一次始终需要修订，第二次接受
         if revision < 1:
             feedback_text = "REVISE: output too brief, need more detail and depth"
             feedback_type = "correction"
@@ -232,11 +232,11 @@ def feedback_collector(state: GraphState, llm: BaseLanguageModel | None = None) 
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 7 — Extraction Pipeline  (plan.md §7.2)
+# 阶段 7 — 提取流水线（plan.md §7.2）
 # ═══════════════════════════════════════════════════════════════════
 
 def extraction_pipeline(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Extract task metadata, memory candidates, and graph relations from the interaction."""
+    """从交互中提取任务元数据、记忆候选和图谱关系。"""
     user_input = state.get("user_input", "")
     output = state.get("execution_result", "")
     feedback = state.get("feedback", "")
@@ -282,11 +282,11 @@ def extraction_pipeline(state: GraphState, llm: BaseLanguageModel | None = None)
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 8 — Memory Update  (plan.md §6 / §13)
+# 阶段 8 — 记忆更新（plan.md §6 / §13）
 # ═══════════════════════════════════════════════════════════════════
 
 def memory_updater(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Update long-term memory: merge candidates, resolve conflicts, apply decay."""
+    """更新长期记忆：合并候选、解决冲突、应用衰退。"""
     candidates = state.get("memory_candidates", [])
 
     updated = []
@@ -308,11 +308,11 @@ def memory_updater(state: GraphState, llm: BaseLanguageModel | None = None) -> d
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 9 — Evaluation  (plan.md §12)
+# 阶段 9 — 评估（plan.md §12）
 # ═══════════════════════════════════════════════════════════════════
 
 def evaluator(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Evaluate the task outcome: compute core metrics via AI judge."""
+    """评估任务结果：通过 AI 评判计算核心指标。"""
     user_input = state.get("user_input", "")
     output = state.get("final_output", "")
     feedback = state.get("feedback", "")
@@ -346,21 +346,21 @@ def evaluator(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════════════
-# Phase 10 — Evolution Check  (plan.md §11 / §17)
+# 阶段 10 — 进化检查（plan.md §11 / §17）
 # ═══════════════════════════════════════════════════════════════════
 
 def evolution_checker(state: GraphState, llm: BaseLanguageModel | None = None) -> dict:
-    """Check whether to trigger an evolution proposal for Prompt/Skill improvement."""
+    """检查是否触发 Prompt/Skill 改进的进化提案。"""
     eval_results = state.get("eval_results", {})
     correction_count = eval_results.get("correction_count", 0)
     completion_score = eval_results.get("completion_score", 0)
 
     if completion_score < 3.0 or correction_count >= 2:
         should_propose = True
-        rationale = "Quality below threshold — Prompt/Skill improvement recommended"
+        rationale = "质量低于阈值 — 建议 Prompt/Skill 改进"
     else:
         should_propose = False
-        rationale = "Quality acceptable — no evolution needed"
+        rationale = "质量可接受 — 无需进化"
 
     proposal = {
         "should_propose": should_propose,
