@@ -1,4 +1,4 @@
-"""Graph package — Self-Prompt-Update Agent (plan.md full pipeline)."""
+"""Graph 包 — Self-Prompt-Update Agent（plan.md 完整流水线）。"""
 
 from graph.state import GraphState
 from graph.nodes import (
@@ -16,40 +16,40 @@ from graph.nodes import (
 from graph.edges import acceptance_router, evolution_router, feedback_quality_router
 
 __all__ = [
-    # State
-    "GraphState",          # TypedDict: 全链路 10-Phase 状态 schema
+    # 状态
+    "GraphState",          # TypedDict: 全链路 10 阶段状态 schema
 
-    # Phase 1 — Event Recording
+    # 阶段 1 — 事件记录
     "event_recorder",      # Node:  记录用户输入，生成 trace_id
 
-    # Phase 2 — Context Retrieval (RAG)
+    # 阶段 2 — 上下文检索（RAG）
     "context_retriever",   # Node:  混合检索历史记忆、用户画像、项目知识
 
-    # Phase 3 — Prompt Compilation
+    # 阶段 3 — Prompt 编译
     "prompt_compiler",     # Node:  编译结构化个性化 Prompt 包
 
-    # Phase 4 — Agent Execution
+    # 阶段 4 — Agent 执行
     "agent_executor",      # Node:  执行任务：推理→工具调用→产出
 
-    # Phase 5 — Output Formatting
+    # 阶段 5 — 输出格式化
     "output_formatter",    # Node:  格式化最终用户输出
 
-    # Phase 6 — Feedback Collection
-    "feedback_collector",  # Node:  收集/判断用户反馈 (accept | reject | correction)
+    # 阶段 6 — 反馈收集
+    "feedback_collector",  # Node:  收集/判断用户反馈（接受 | 拒绝 | 修正）
 
-    # Phase 7 — Extraction Pipeline
+    # 阶段 7 — 提取流水线
     "extraction_pipeline",  # Node:  抽取任务元数据、记忆候选、图谱关系
 
-    # Phase 8 — Memory Update
+    # 阶段 8 — 记忆更新
     "memory_updater",      # Node:  更新长期记忆、合并冲突、执行衰退
 
-    # Phase 9 — Evaluation
-    "evaluator",           # Node:  AI judge 评分 (completion/style/relevance)
+    # 阶段 9 — 评估
+    "evaluator",           # Node:  AI 评判评分（完成度/风格/相关度）
 
-    # Phase 10 — Evolution Check
+    # 阶段 10 — 进化检查
     "evolution_checker",   # Node:  判断是否触发 Prompt/Skill 进化提案
 
-    # Edges / Routers
+    # 边 / 路由器
     "acceptance_router",       # Edge:  输出格式化后 → 收集反馈
     "feedback_quality_router", # Edge:  根据反馈类型决定修订或提取
     "evolution_router",       # Edge:  根据评测决定进化提案或结束
